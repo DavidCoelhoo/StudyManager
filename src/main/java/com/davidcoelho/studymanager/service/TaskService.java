@@ -1,6 +1,7 @@
 package com.davidcoelho.studymanager.service;
 
 import com.davidcoelho.studymanager.entity.Task;
+import com.davidcoelho.studymanager.exception.TaskNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,14 +10,17 @@ import java.util.List;
 @Service
 public class TaskService {
     private final List<Task> tasks = new ArrayList<>();
+    private Integer nextId = 0;
 
     public Task addTask(Task task) {
+        nextId++;
+        task.setId(nextId);
         tasks.add(task);
         return task;
     }
 
     public List<Task> getTasks() {
-        return tasks;
+        return List.copyOf(tasks);
     }
 
     public Task getTaskById(Integer id) {
@@ -25,7 +29,7 @@ public class TaskService {
                 return task;
             }
         }
-        return null;
+        throw new TaskNotFoundException(id);
     }
 
     public Task updateTask(Integer id, Task task) {
