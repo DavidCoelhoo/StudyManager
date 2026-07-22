@@ -1,28 +1,38 @@
 package com.davidcoelho.studymanager.entity;
 
 
-
 public class Task {
-    private static int nextID = 0;
-    private int id;
+    private static int nextId = 0;
+    private Integer id;
     private String name;
     private String subject;
 
     public Task() {
     }
-    public Task(int id, String name, String suject){
-        this.id = ++Task.nextID;
+
+    public Task(String name, String subject) {
+        this.id = ++nextId;
         this.name = name;
-        this.subject = suject;
+        this.subject = subject;
     }
 
-    public int getId(){
+    public Integer getId() {
         return id;
     }
-    public String  getName(){
+
+    public String getName() {
         return name;
     }
-    public String getSubject(){
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSubject() {
         return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 }
