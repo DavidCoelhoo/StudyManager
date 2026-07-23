@@ -36,6 +36,7 @@ public class TaskService {
         Task taskFound = getTaskById(id);
         taskFound.setName(task.getName());
         taskFound.setSubject(task.getSubject());
+        taskFound.setDeadline(task.getDeadline());
 
         return taskFound;
     }

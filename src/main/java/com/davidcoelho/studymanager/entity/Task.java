@@ -1,17 +1,26 @@
 package com.davidcoelho.studymanager.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
+
 public class Task {
     private Integer id;
     private String name;
     private String subject;
+    @JsonProperty("deadline")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate deadline;
 
     public Task() {
     }
 
-    public Task(String name, String subject) {
+    public Task(String name, String subject, LocalDate deadline) {
         this.name = name;
         this.subject = subject;
+        this.deadline = deadline;
     }
 
     public Integer getId() {
@@ -37,4 +46,9 @@ public class Task {
     public void setSubject(String subject) {
         this.subject = subject;
     }
+
+    public LocalDate getDeadline() {return deadline; }
+
+    @JsonProperty("deadline")
+    public void setDeadline(LocalDate deadline) {this.deadline = deadline; }
 }
