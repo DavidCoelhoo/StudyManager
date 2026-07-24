@@ -24,12 +24,10 @@ public class TaskService {
     }
 
     public Task getTaskById(Integer id) {
-        for (Task task : tasks) {
-            if (task.getId().equals(id)) {
-                return task;
-            }
-        }
-        throw new TaskNotFoundException(id);
+        return tasks.stream()
+                .filter(task -> task.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task updateTask(Integer id, Task task) {
