@@ -2,31 +2,29 @@ package com.davidcoelho.studymanager.service;
 
 import com.davidcoelho.studymanager.entity.Task;
 import com.davidcoelho.studymanager.exception.TaskNotFoundException;
+import com.davidcoelho.studymanager.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TaskService {
-    private final List<Task> tasks = new ArrayList<>();
-    private Integer nextId = 0;
+    private final TaskRepository taskRepository;
 
-    public Task addTask(Task task) {
-        nextId++;
-        task.setId(nextId);
-        tasks.add(task);
-        return task;
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
-    public List<Task> getTasks() {
-        return List.copyOf(tasks);
+    public Task addTask(Task task) {
+        return taskRepository.save(task);
+    }
+
+    public List<Task> listTasks() {
+        return taskRepository.findAll();
     }
 
     public Task getTaskById(Integer id) {
-        return tasks.stream()
-                .filter(task -> task.getId().equals(id))
-                .findFirst()
+        return taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
@@ -36,11 +34,11 @@ public class TaskService {
         taskFound.setSubject(task.getSubject());
         taskFound.setDeadline(task.getDeadline());
 
-        return taskFound;
+        return taskRepository.save(taskFound);
     }
 
-    public void deleteTask(Integer id){
+    public void deleteTask(Integer id) {
         Task taskFound = getTaskById(id);
-        tasks.remove(taskFound);
+        taskRepository.delete(taskFound);
     }
 }
