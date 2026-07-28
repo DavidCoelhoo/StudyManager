@@ -1,7 +1,10 @@
 package com.davidcoelho.studymanager.service;
 
+import com.davidcoelho.studymanager.dto.TaskRequest;
+import com.davidcoelho.studymanager.dto.TaskResponse;
 import com.davidcoelho.studymanager.entity.Task;
 import com.davidcoelho.studymanager.exception.TaskNotFoundException;
+import com.davidcoelho.studymanager.mapper.TaskMapper;
 import com.davidcoelho.studymanager.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,35 +13,52 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
+
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
-    public Task addTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse addTask(TaskRequest request) {
+        Task task = taskMapper.toEntity(request);
+        Task savedTask = taskRepository.save(task);
+        return taskMapper.toResponse(savedTask);
     }
 
-    public List<Task> listTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponse> listTasks() {
+
+        return taskRepository.findAll()
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
     }
 
-    public Task getTaskById(Integer id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
+    public TaskResponse getTaskById(Integer id) {
+
+        Task task = findTaskByIdOrThrow(id);
+        return taskMapper.toResponse(task);
     }
 
-    public Task updateTask(Integer id, Task task) {
-        Task taskFound = getTaskById(id);
-        taskFound.setName(task.getName());
-        taskFound.setSubject(task.getSubject());
-        taskFound.setDeadline(task.getDeadline());
+    public TaskResponse updateTask(Integer id, TaskRequest request) {
+        Task taskFound = findTaskByIdOrThrow(id);
+        taskFound.setName(request.getName());
+        taskFound.setSubject(request.getSubject());
+        taskFound.setDeadline(request.getDeadline());
 
-        return taskRepository.save(taskFound);
+        Task savedTask = taskRepository.save(taskFound);
+
+        return taskMapper.toResponse(savedTask);
     }
 
     public void deleteTask(Integer id) {
-        Task taskFound = getTaskById(id);
+        Task taskFound = findTaskByIdOrThrow(id);
         taskRepository.delete(taskFound);
+    }
+
+    private Task findTaskByIdOrThrow(Integer id){
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 }

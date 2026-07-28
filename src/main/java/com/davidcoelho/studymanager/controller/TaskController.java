@@ -1,6 +1,7 @@
 package com.davidcoelho.studymanager.controller;
 
-import com.davidcoelho.studymanager.entity.Task;
+import com.davidcoelho.studymanager.dto.TaskRequest;
+import com.davidcoelho.studymanager.dto.TaskResponse;
 import com.davidcoelho.studymanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,25 +20,25 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> add(@Valid @RequestBody Task newTask) {
-        Task createdTask = taskService.addTask(newTask);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
+    public ResponseEntity<TaskResponse> add(@Valid @RequestBody TaskRequest request) {
+        TaskResponse response = taskService.addTask(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public List<Task> getTasks() {
+    public List<TaskResponse> getTasks() {
         return taskService.listTasks();
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Integer id) {
+    public TaskResponse getTaskById(@PathVariable Integer id) {
         return taskService.getTaskById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> update(@PathVariable Integer id, @Valid @RequestBody Task updatedTask) {
-        Task taskFound = taskService.updateTask(id, updatedTask);
-        return ResponseEntity.ok(taskFound);
+    public ResponseEntity<TaskResponse> update(@PathVariable Integer id, @Valid @RequestBody TaskRequest request) {
+        TaskResponse response = taskService.updateTask(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
