@@ -41,6 +41,31 @@ public class TaskService {
         return taskMapper.toResponse(task);
     }
 
+    public List<TaskResponse> findTaskBySubject(String subject) {
+        return taskRepository.findBySubjectIgnoreCase(subject)
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
+    }
+
+    public List<TaskResponse> findTaskByName(String name){
+        return taskRepository.findByNameIgnoreCase(name)
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
+    }
+
+    public List<TaskResponse> searchTasks(String term) {
+        return taskRepository
+                .findByNameContainingIgnoreCaseOrSubjectContainingIgnoreCase(
+                        term,
+                        term
+                )
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
+    }
+
     public TaskResponse updateTask(Integer id, TaskRequest request) {
         Task taskFound = findTaskByIdOrThrow(id);
         taskFound.setName(request.getName());
@@ -57,7 +82,7 @@ public class TaskService {
         taskRepository.delete(taskFound);
     }
 
-    private Task findTaskByIdOrThrow(Integer id){
+    private Task findTaskByIdOrThrow(Integer id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
     }

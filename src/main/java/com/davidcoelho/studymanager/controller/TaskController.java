@@ -35,6 +35,21 @@ public class TaskController {
         return taskService.getTaskById(id);
     }
 
+    @GetMapping(params = "subject")
+    public List<TaskResponse> getBySubject(@RequestParam String subject){
+        return taskService.findTaskBySubject(subject);
+    }
+
+    @GetMapping(params = "name")
+    public List<TaskResponse> getByName(@RequestParam String name){
+        return taskService.findTaskByName(name);
+    }
+
+    @GetMapping("/search")
+    public List<TaskResponse> searchTasks(@RequestParam String term) {
+        return taskService.searchTasks(term);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponse> update(@PathVariable Integer id, @Valid @RequestBody TaskRequest request) {
         TaskResponse response = taskService.updateTask(id, request);
