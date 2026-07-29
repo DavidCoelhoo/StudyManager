@@ -22,7 +22,7 @@ public class Task {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate deadline;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "task_status", nullable = false)
     private TaskStatus status;
 
     public Task() {
