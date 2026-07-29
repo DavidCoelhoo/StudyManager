@@ -21,7 +21,8 @@ public class TaskMapper {
                 task.getId(),
                 task.getName(),
                 task.getSubject(),
-                task.getDeadline()
+                task.getDeadline(),
+                task.getTaskStatus()
         );
     }
 }

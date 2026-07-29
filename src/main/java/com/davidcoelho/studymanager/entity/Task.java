@@ -1,12 +1,10 @@
 package com.davidcoelho.studymanager.entity;
 
 
+import com.davidcoelho.studymanager.enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
@@ -23,6 +21,9 @@ public class Task {
     @JsonProperty("deadline")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate deadline;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
     public Task() {
     }
@@ -57,4 +58,10 @@ public class Task {
 
     @JsonProperty("deadline")
     public void setDeadline(LocalDate deadline) {this.deadline = deadline; }
+
+    public TaskStatus getTaskStatus(){return status;}
+
+    public void setTaskStatus(TaskStatus taskStatus){
+        this.status = taskStatus;
+    }
 }

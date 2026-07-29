@@ -2,6 +2,7 @@ package com.davidcoelho.studymanager.controller;
 
 import com.davidcoelho.studymanager.dto.TaskRequest;
 import com.davidcoelho.studymanager.dto.TaskResponse;
+import com.davidcoelho.studymanager.dto.TaskStatusRequest;
 import com.davidcoelho.studymanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,12 @@ public class TaskController {
     public ResponseEntity<TaskResponse> update(@PathVariable Integer id, @Valid @RequestBody TaskRequest request) {
         TaskResponse response = taskService.updateTask(id, request);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TaskResponse> updateStatus(@PathVariable Integer id, @Valid @RequestBody TaskStatusRequest request){
+        TaskResponse response = taskService.updateStatus(id, request.getStatus());
+        return  ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")

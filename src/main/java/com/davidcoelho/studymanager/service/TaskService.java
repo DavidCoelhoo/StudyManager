@@ -3,6 +3,7 @@ package com.davidcoelho.studymanager.service;
 import com.davidcoelho.studymanager.dto.TaskRequest;
 import com.davidcoelho.studymanager.dto.TaskResponse;
 import com.davidcoelho.studymanager.entity.Task;
+import com.davidcoelho.studymanager.enums.TaskStatus;
 import com.davidcoelho.studymanager.exception.TaskNotFoundException;
 import com.davidcoelho.studymanager.mapper.TaskMapper;
 import com.davidcoelho.studymanager.repository.TaskRepository;
@@ -23,6 +24,7 @@ public class TaskService {
 
     public TaskResponse addTask(TaskRequest request) {
         Task task = taskMapper.toEntity(request);
+        task.setTaskStatus(TaskStatus.PENDING);
         Task savedTask = taskRepository.save(task);
         return taskMapper.toResponse(savedTask);
     }
@@ -74,6 +76,13 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(taskFound);
 
+        return taskMapper.toResponse(savedTask);
+    }
+    public TaskResponse updateStatus(Integer id, TaskStatus status){
+        Task taskFound = findTaskByIdOrThrow(id);
+        taskFound.setTaskStatus(status);
+
+        Task savedTask = taskRepository.save(taskFound);
         return taskMapper.toResponse(savedTask);
     }
 
