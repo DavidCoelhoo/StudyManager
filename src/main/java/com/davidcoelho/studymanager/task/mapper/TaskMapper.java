@@ -1,8 +1,8 @@
-package com.davidcoelho.studymanager.mapper;
+package com.davidcoelho.studymanager.task.mapper;
 
-import com.davidcoelho.studymanager.dto.TaskRequest;
-import com.davidcoelho.studymanager.dto.TaskResponse;
-import com.davidcoelho.studymanager.entity.Task;
+import com.davidcoelho.studymanager.task.dto.TaskRequest;
+import com.davidcoelho.studymanager.task.dto.TaskResponse;
+import com.davidcoelho.studymanager.task.entity.Task;
 import org.springframework.stereotype.Component;
 
 @Component

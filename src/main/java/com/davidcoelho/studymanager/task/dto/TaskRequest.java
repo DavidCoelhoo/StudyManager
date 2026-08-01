@@ -1,4 +1,4 @@
-package com.davidcoelho.studymanager.dto;
+package com.davidcoelho.studymanager.task.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;

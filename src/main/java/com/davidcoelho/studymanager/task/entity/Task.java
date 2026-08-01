@@ -1,7 +1,7 @@
-package com.davidcoelho.studymanager.entity;
+package com.davidcoelho.studymanager.task.entity;
 
 
-import com.davidcoelho.studymanager.enums.TaskStatus;
+import com.davidcoelho.studymanager.task.enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;

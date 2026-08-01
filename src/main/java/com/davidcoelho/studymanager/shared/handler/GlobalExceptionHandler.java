@@ -1,11 +1,13 @@
-package com.davidcoelho.studymanager.handler;
+package com.davidcoelho.studymanager.shared.handler;
 
-import com.davidcoelho.studymanager.dto.ValidationErrorResponse;
-import com.davidcoelho.studymanager.exception.TaskNotFoundException;
+import com.davidcoelho.studymanager.account.exception.EmailAlreadyExistsException;
+import com.davidcoelho.studymanager.shared.dto.ValidationErrorResponse;
+import com.davidcoelho.studymanager.task.exception.TaskNotFoundException;
+import com.davidcoelho.studymanager.account.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.davidcoelho.studymanager.dto.ErrorResponse;
+import com.davidcoelho.studymanager.shared.dto.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -60,5 +62,40 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(validationErrorResponse);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(
+            UserNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(errorResponse);
+
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(
+            EmailAlreadyExistsException exception,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
+    }
+
 
 }

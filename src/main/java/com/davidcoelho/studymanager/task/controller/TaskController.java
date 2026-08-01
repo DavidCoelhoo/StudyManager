@@ -1,9 +1,9 @@
-package com.davidcoelho.studymanager.controller;
+package com.davidcoelho.studymanager.task.controller;
 
-import com.davidcoelho.studymanager.dto.TaskRequest;
-import com.davidcoelho.studymanager.dto.TaskResponse;
-import com.davidcoelho.studymanager.dto.TaskStatusRequest;
-import com.davidcoelho.studymanager.service.TaskService;
+import com.davidcoelho.studymanager.task.dto.TaskRequest;
+import com.davidcoelho.studymanager.task.dto.TaskResponse;
+import com.davidcoelho.studymanager.task.dto.TaskStatusRequest;
+import com.davidcoelho.studymanager.task.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

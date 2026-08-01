@@ -1,6 +1,6 @@
-package com.davidcoelho.studymanager.repository;
+package com.davidcoelho.studymanager.task.repository;
 
-import com.davidcoelho.studymanager.entity.Task;
+import com.davidcoelho.studymanager.task.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

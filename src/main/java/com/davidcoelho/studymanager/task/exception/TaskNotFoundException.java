@@ -1,7 +1,4 @@
-package com.davidcoelho.studymanager.exception;
-
-import com.davidcoelho.studymanager.dto.ErrorResponse;
-import org.springframework.http.ResponseEntity;
+package com.davidcoelho.studymanager.task.exception;
 
 public class TaskNotFoundException extends RuntimeException {
 

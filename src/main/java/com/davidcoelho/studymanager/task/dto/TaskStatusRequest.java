@@ -1,6 +1,6 @@
-package com.davidcoelho.studymanager.dto;
+package com.davidcoelho.studymanager.task.dto;
 
-import com.davidcoelho.studymanager.enums.TaskStatus;
+import com.davidcoelho.studymanager.task.enums.TaskStatus;
 import jakarta.validation.constraints.NotNull;
 
 public class TaskStatusRequest {

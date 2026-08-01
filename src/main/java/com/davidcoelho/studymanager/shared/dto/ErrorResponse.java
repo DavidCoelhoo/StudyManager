@@ -1,4 +1,4 @@
-package com.davidcoelho.studymanager.dto;
+package com.davidcoelho.studymanager.shared.dto;
 
 
 import java.time.Instant;

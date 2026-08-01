@@ -1,12 +1,12 @@
-package com.davidcoelho.studymanager.service;
+package com.davidcoelho.studymanager.task.service;
 
-import com.davidcoelho.studymanager.dto.TaskRequest;
-import com.davidcoelho.studymanager.dto.TaskResponse;
-import com.davidcoelho.studymanager.entity.Task;
-import com.davidcoelho.studymanager.enums.TaskStatus;
-import com.davidcoelho.studymanager.exception.TaskNotFoundException;
-import com.davidcoelho.studymanager.mapper.TaskMapper;
-import com.davidcoelho.studymanager.repository.TaskRepository;
+import com.davidcoelho.studymanager.task.dto.TaskRequest;
+import com.davidcoelho.studymanager.task.dto.TaskResponse;
+import com.davidcoelho.studymanager.task.entity.Task;
+import com.davidcoelho.studymanager.task.enums.TaskStatus;
+import com.davidcoelho.studymanager.task.exception.TaskNotFoundException;
+import com.davidcoelho.studymanager.task.mapper.TaskMapper;
+import com.davidcoelho.studymanager.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
