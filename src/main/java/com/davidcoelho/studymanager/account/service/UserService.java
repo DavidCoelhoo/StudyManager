@@ -8,6 +8,7 @@ import com.davidcoelho.studymanager.account.exception.EmailAlreadyExistsExceptio
 import com.davidcoelho.studymanager.account.exception.UserNotFoundException;
 import com.davidcoelho.studymanager.account.mapper.UserMapper;
 import com.davidcoelho.studymanager.account.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +17,16 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService( UserRepository userRepository, UserMapper userMapper){
+    public UserService(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            PasswordEncoder passwordEncoder
+    ){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse addUser(UserRequest request){
@@ -27,6 +34,10 @@ public class UserService {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
         User user = userMapper.toEntity(request);
+
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         User savedUser = userRepository.save(user);
         return userMapper.toResponse(savedUser);
     }
