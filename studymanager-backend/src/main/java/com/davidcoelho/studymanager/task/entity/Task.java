@@ -1,6 +1,7 @@
 package com.davidcoelho.studymanager.task.entity;
 
 
+import com.davidcoelho.studymanager.account.entity.User;
 import com.davidcoelho.studymanager.task.enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +25,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "task_status", nullable = false)
     private TaskStatus status;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Task() {
     }
@@ -32,6 +36,14 @@ public class Task {
         this.name = name;
         this.subject = subject;
         this.deadline = deadline;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Integer getId() {
