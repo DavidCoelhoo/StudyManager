@@ -1,5 +1,7 @@
 package com.davidcoelho.studymanager.task.service;
 
+import com.davidcoelho.studymanager.account.entity.User;
+import com.davidcoelho.studymanager.account.repository.UserRepository;
 import com.davidcoelho.studymanager.task.dto.TaskRequest;
 import com.davidcoelho.studymanager.task.dto.TaskResponse;
 import com.davidcoelho.studymanager.task.entity.Task;
@@ -7,31 +9,63 @@ import com.davidcoelho.studymanager.task.enums.TaskStatus;
 import com.davidcoelho.studymanager.task.exception.TaskNotFoundException;
 import com.davidcoelho.studymanager.task.mapper.TaskMapper;
 import com.davidcoelho.studymanager.task.repository.TaskRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class TaskService {
+    private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
-
+    public TaskService(
+            TaskRepository taskRepository,
+            TaskMapper taskMapper,
+            UserRepository userRepository
+    ) {
+        this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
     }
 
     public TaskResponse addTask(TaskRequest request) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found")
+                );
+
         Task task = taskMapper.toEntity(request);
+
         task.setTaskStatus(TaskStatus.PENDING);
+        task.setUser(user);
+
         Task savedTask = taskRepository.save(task);
+
         return taskMapper.toResponse(savedTask);
     }
 
     public List<TaskResponse> listTasks() {
 
-        return taskRepository.findAll()
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("Authenticated user not found")
+                );
+        Integer userId = user.getId();
+
+
+        return taskRepository.findByUserId(userId)
                 .stream()
                 .map(taskMapper::toResponse)
                 .toList();
@@ -39,8 +73,18 @@ public class TaskService {
 
     public TaskResponse getTaskById(Integer id) {
 
-        Task task = findTaskByIdOrThrow(id);
-        return taskMapper.toResponse(task);
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found"));
+
+        Integer userId = user.getId();
+
+        return taskRepository.findByIdAndUserId(id, userId)
+                .map(taskMapper::toResponse)
+                .orElseThrow(()-> new TaskNotFoundException(id));
     }
 
     public List<TaskResponse> findTaskBySubject(String subject) {
