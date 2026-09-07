@@ -32,15 +32,7 @@ public class TaskService {
     }
 
     public TaskResponse addTask(TaskRequest request) {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = authentication.getName();
-
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found")
-                );
+        User user = getAuthenticatedUser();
 
         Task task = taskMapper.toEntity(request);
 
@@ -53,17 +45,7 @@ public class TaskService {
     }
 
     public List<TaskResponse> listTasks() {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = authentication.getName();
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(()->
-                        new RuntimeException("Authenticated user not found")
-                );
-        Integer userId = user.getId();
-
+        Integer userId = getAuthenticatedUser().getId();
 
         return taskRepository.findByUserId(userId)
                 .stream()
@@ -72,40 +54,36 @@ public class TaskService {
     }
 
     public TaskResponse getTaskById(Integer id) {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
-
-        Integer userId = user.getId();
-
-        return taskRepository.findByIdAndUserId(id, userId)
-                .map(taskMapper::toResponse)
-                .orElseThrow(()-> new TaskNotFoundException(id));
+        return taskMapper.toResponse(findTaskByIdOrThrow(id));
     }
 
     public List<TaskResponse> findTaskBySubject(String subject) {
-        return taskRepository.findBySubjectIgnoreCase(subject)
+        User user = getAuthenticatedUser();
+
+        return taskRepository.findBySubjectIgnoreCaseAndUser(subject, user)
                 .stream()
                 .map(taskMapper::toResponse)
                 .toList();
     }
 
     public List<TaskResponse> findTaskByName(String name){
-        return taskRepository.findByNameIgnoreCase(name)
+        User user = getAuthenticatedUser();
+
+        return taskRepository.findByNameIgnoreCaseAndUser(name, user)
                 .stream()
                 .map(taskMapper::toResponse)
                 .toList();
     }
 
     public List<TaskResponse> searchTasks(String term) {
+        User user = getAuthenticatedUser();
+
         return taskRepository
-                .findByNameContainingIgnoreCaseOrSubjectContainingIgnoreCase(
+                .findByNameContainingIgnoreCaseAndUserOrSubjectContainingIgnoreCaseAndUser(
                         term,
-                        term
+                        user,
+                        term,
+                        user
                 )
                 .stream()
                 .map(taskMapper::toResponse)
@@ -136,7 +114,13 @@ public class TaskService {
     }
 
     private Task findTaskByIdOrThrow(Integer id) {
-        return taskRepository.findById(id)
+        return taskRepository.findByIdAndUserId(id, getAuthenticatedUser().getId())
                 .orElseThrow(() -> new TaskNotFoundException(id));
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findUserByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     }
 }
