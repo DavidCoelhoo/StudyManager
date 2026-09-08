@@ -5,16 +5,16 @@ import com.davidcoelho.studymanager.account.dto.UserRequest;
 import com.davidcoelho.studymanager.account.dto.UserResponse;
 import com.davidcoelho.studymanager.account.entity.User;
 import com.davidcoelho.studymanager.account.exception.EmailAlreadyExistsException;
-import com.davidcoelho.studymanager.account.exception.UserNotFoundException;
 import com.davidcoelho.studymanager.account.mapper.UserMapper;
 import com.davidcoelho.studymanager.account.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -23,59 +23,56 @@ public class UserService {
             UserRepository userRepository,
             UserMapper userMapper,
             PasswordEncoder passwordEncoder
-    ){
+    ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponse addUser(UserRequest request){
-        if(userRepository.findUserByEmail(request.getEmail()).isPresent()){
+    public UserResponse addUser(UserRequest request) {
+        if (userRepository.findUserByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
+
         User user = userMapper.toEntity(request);
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
         User savedUser = userRepository.save(user);
+
         return userMapper.toResponse(savedUser);
     }
 
-    public List<UserResponse> listUsers(){
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toResponse)
-                .toList();
-    }
+    public UserResponse getCurrentUser() {
+        User user = getAuthenticatedUser();
 
-    public UserResponse getUserById(Integer id){
-        User user = findUserByIdOrThrow(id);
         return userMapper.toResponse(user);
     }
 
-    public UserResponse findUserByEmail(String email){
-        return userRepository.findUserByEmail(email)
-                .map(userMapper::toResponse)
-                .orElseThrow(()-> new UserNotFoundException(email));
-    }
+    public UserResponse updateUser(UpdateUserRequest request) {
+        User user = getAuthenticatedUser();
 
-    public UserResponse updateUser(Integer id, UpdateUserRequest request){
-        User userFound = findUserByIdOrThrow(id);
-        userFound.setName(request.getName());
-        User savedUser = userRepository.save(userFound);
+        user.setName(request.getName());
+
+        User savedUser = userRepository.save(user);
 
         return userMapper.toResponse(savedUser);
     }
 
-    public void deleteUser(Integer id){
-        User userFound = findUserByIdOrThrow(id);
-        userRepository.delete(userFound);
+    public void deleteUser() {
+        User user = getAuthenticatedUser();
+
+        userRepository.delete(user);
     }
 
-    private User findUserByIdOrThrow(Integer id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-    }
+    private User getAuthenticatedUser() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
 
+        return userRepository.findUserByEmail(authentication.getName())
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found")
+                );
+    }
 }
