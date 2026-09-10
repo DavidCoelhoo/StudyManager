@@ -1,7 +1,9 @@
 package com.davidcoelho.studymanager.auth.service;
 
+import com.davidcoelho.studymanager.account.entity.User;
 import com.davidcoelho.studymanager.auth.dto.LoginRequest;
 import com.davidcoelho.studymanager.auth.dto.LoginResponse;
+import com.davidcoelho.studymanager.auth.principal.AuthUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,23 +25,23 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public LoginResponse login(LoginRequest request){
+    public LoginResponse login(LoginRequest request) {
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
-
                 );
+
         Authentication authentication =
                 authenticationManager.authenticate(authenticationToken);
 
-        UserDetails userDetails =
-                (UserDetails) authentication.getPrincipal();
+        AuthUserDetails authUserDetails =
+                (AuthUserDetails) authentication.getPrincipal();
 
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(authUserDetails);
 
         return new LoginResponse(token);
-
     }
 
 }

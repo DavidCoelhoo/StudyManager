@@ -2,10 +2,14 @@ package com.davidcoelho.studymanager.auth.service;
 
 import com.davidcoelho.studymanager.account.entity.User;
 import com.davidcoelho.studymanager.account.repository.UserRepository;
+import com.davidcoelho.studymanager.auth.principal.AuthUserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AuthUserDetailsService implements UserDetailsService {
@@ -27,11 +31,27 @@ public class AuthUserDetailsService implements UserDetailsService {
                         )
                 );
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
-                .authorities("USER")
-                .build();
+        return new AuthUserDetails(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("USER"))
+        );
+    }
+    public AuthUserDetails loadUserById(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User with id '" + id + "' was not found."
+                        )
+                );
+
+        return new AuthUserDetails(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("USER"))
+        );
     }
 }
 
