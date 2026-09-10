@@ -1,11 +1,11 @@
 package com.davidcoelho.studymanager.auth.service;
 
+import com.davidcoelho.studymanager.auth.principal.AuthUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -29,12 +29,12 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(AuthUserDetails authUserDetails){
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(authUserDetails.getId().toString())
                 .issuedAt(issuedAt)
                 .expiration(expiration)
                 .signWith(getSigningKey())
@@ -49,10 +49,10 @@ public class JwtService {
                 .getPayload();
     }
 
-    public String extractUsername(String token){
+    public Integer extractUserId(String token){
         Claims claims = extractClaims(token);
 
-        return claims.getSubject();
+        return Integer.valueOf(claims.getSubject());
     }
 
     private boolean isTokenExpired(String token){
@@ -62,11 +62,11 @@ public class JwtService {
         return expiration.before(new Date());
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        String tokenUsername = extractUsername(token);
-        String userDetailsUsername = userDetails.getUsername();
+    public boolean isTokenValid(String token, AuthUserDetails authUserDetails){
+        Integer tokenUserId = extractUserId(token);
+        Integer userDetailsId = authUserDetails.getId();
 
-        boolean belongsToUser = tokenUsername.equals(userDetailsUsername);
+        boolean belongsToUser = tokenUserId.equals(userDetailsId);
         boolean isNotExpired = !isTokenExpired(token);
 
         return belongsToUser && isNotExpired;
